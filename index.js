@@ -1,3 +1,6 @@
+// load environment variables;
+require('dotenv').load();
+
 var Firebase = require('firebase');
 var Q = require('q');
 var uuid = require('uuid');
@@ -5,9 +8,10 @@ var mkdirp = require('mkdirp');
 var requester = require('./src/imageRequest');
 var runner = require('./src/runner');
 var path = require('path');
-
+var uploadToS3 = require('./src/s3plyUploader');
 var exec = require( 'child_process' ).exec;
 var tmpPath = 'tmp';
+
 
 exec( 'rm -r ' + tmpPath, function ( err, stdout, stderr ){
 
@@ -20,7 +24,7 @@ cloudsRef.on('child_added', function(value) {
     console.log('cloud ADDED', cloud);
     /*debugger;*/
     // don't process the ones that have been already processed;
-    if (cloud.points) return;
+    if (cloud.processed) return;
 
     cloud.id = uuid.v4();
 
@@ -36,6 +40,21 @@ cloudsRef.on('child_added', function(value) {
 
     Q.all(promises)
         .then(function(images) {
-            runner(inputDir, baseDir);
-        });
+            return runner(inputDir, baseDir)
+        })
+        .then(function(plys) {
+            console.log(plys);
+            var uploadFiles = plys.map(function(ply) {
+                return uploadToS3(cloud.id, ply);
+            });
+
+            Q.all(uploadFiles)
+                .then(function(files) {
+                    console.log('files!\n', files)
+                    cloud.plys = files;
+                    cloud.processed = true;
+                    cloudsRef.child(value.key()).set(cloud);
+                });
+
+        })
 });
