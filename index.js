@@ -6,8 +6,15 @@ var requester = require('./src/imageRequest');
 var runner = require('./src/runner');
 var path = require('path');
 
+var exec = require( 'child_process' ).exec;
+var tmpPath = 'tmp';
 
+exec( 'rm -r ' + tmpPath, function ( err, stdout, stderr ){
+
+});
 var cloudsRef = new Firebase('https://splatmap.firebaseio.com/clouds');
+
+
 cloudsRef.on('child_added', function(value) {
     var cloud = value.val();
     console.log('cloud ADDED', cloud);

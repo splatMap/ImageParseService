@@ -8,23 +8,24 @@ var path = require('path');
 module.exports = {
     requestImage: function(imageUrl, fsPath) {
         var urlPath = url.parse(imageUrl)
-        console.log(path);
         paths = urlPath.pathname.split('/')
-        var fileName = path.join(fsPath, paths[paths.length - 1]);
+        var filename = path.join(fsPath, paths[paths.length - 1]);
         var deferred = Q.defer();
 
         request(imageUrl)
-            .on('end', function(response) {
-                debugger;
-                console.log("done loading", imageUrl);
-                deferred.resolve({
-                    fileName : fileName
-                });
+            .on('response', function(response) {
+                response.on('end', function() {
+                    console.log(filename + '\n' + response);
+                    console.log("done loading", imageUrl);
+                    deferred.resolve({
+                        filename : filename
+                    });
+                })
             })
             .on('error', function(error) {
                 deferred.reject(error);
             })
-            .pipe(fs.createWriteStream(fileName));
+            .pipe(fs.createWriteStream(filename));
 
         return deferred.promise;
     }
