@@ -2,6 +2,7 @@ var Q = require('q');
 var request = require('request');
 var fs = require('fs');
 var url = require('url');
+var path = require('path');
 
 
 module.exports = {
@@ -9,7 +10,7 @@ module.exports = {
         var path = url.parse(imageUrl)
         console.log(path);
         paths = path.pathname.split('/')
-        var fileName = fsPath + '/' + paths[paths.length - 1] + '.jpg';
+        var fileName = path.join(fsPath, paths[paths.length - 1] + '.jpg');
         var deferred = Q.defer();
 
         request(imageUrl)

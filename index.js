@@ -17,8 +17,8 @@ cloudsRef.on('child_added', function(value) {
 
     cloud.id = uuid.v4();
 
-    var baseDir = path.resolve('tmp/' + cloud.id);
-    var inputDir = baseDir + '/in';
+    var baseDir = path.resolve(path.join('tmp', cloud.id));
+    var inputDir = path.join(baseDir, 'in');
     // make the directories
     mkdirp.sync(inputDir);
     mkdirp.sync(outputDir);
