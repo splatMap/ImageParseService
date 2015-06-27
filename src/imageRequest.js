@@ -7,10 +7,10 @@ var path = require('path');
 
 module.exports = {
     requestImage: function(imageUrl, fsPath) {
-        var path = url.parse(imageUrl)
+        var urlPath = url.parse(imageUrl)
         console.log(path);
-        paths = path.pathname.split('/')
-        var fileName = path.join(fsPath, paths[paths.length - 1] + '.jpg');
+        paths = urlPath.pathname.split('/')
+        var fileName = path.join(fsPath, paths[paths.length - 1]);
         var deferred = Q.defer();
 
         request(imageUrl)
@@ -18,8 +18,7 @@ module.exports = {
                 debugger;
                 console.log("done loading", imageUrl);
                 deferred.resolve({
-                    fileName : fileName,
-                    dir: fsPath
+                    fileName : fileName
                 });
             })
             .on('error', function(error) {

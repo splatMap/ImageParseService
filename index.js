@@ -20,8 +20,8 @@ cloudsRef.on('child_added', function(value) {
     var baseDir = path.resolve(path.join('tmp', cloud.id));
     var inputDir = path.join(baseDir, 'in');
     // make the directories
+    mkdirp.sync(baseDir);
     mkdirp.sync(inputDir);
-    mkdirp.sync(outputDir);
 
     var promises = cloud.images.map(function(imgUrl) {
         return requester.requestImage(imgUrl, inputDir);
