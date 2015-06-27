@@ -6,7 +6,7 @@ var COMMAND = 'VisualSFM'
 module.exports = function runVisualSFM(inputDir, outputDir) {
 
     var args = [
-        'sfm',
+        'sfm+pmvs',
         // inputDir
         inputDir,
         outputDir + '/result.nvm'
