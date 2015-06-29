@@ -17,9 +17,10 @@ exec( 'rm -r ' + tmpPath, function ( err, stdout, stderr ){
 
 });
 var cloudsRef = new Firebase('https://splatmap.firebaseio.com/clouds');
-
+var processedRef = new Firebase('https://splatmap.firebaseio.com/processedClouds');
 
 cloudsRef.on('child_added', function(value) {
+    try {
     var cloud = value.val();
     console.log('cloud ADDED', cloud);
     /*debugger;*/
@@ -51,10 +52,16 @@ cloudsRef.on('child_added', function(value) {
             Q.all(uploadFiles)
                 .then(function(files) {
                     console.log('files!\n', files)
-                    cloud.plys = files;
                     cloud.processed = true;
-                    cloudsRef.child(value.key()).set(cloud);
+                    if (!files) {
+                        return;
+                    }
+                    cloud.plys = files;
+                    processedRef.push(cloud);
                 });
 
         })
+    } catch (e) {
+        console.log('coudl not process');
+    }
 });
